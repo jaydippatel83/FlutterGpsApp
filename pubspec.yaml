@@ -16,8 +16,11 @@ dependencies:
   cloud_firestore: ^1.0.2
   geolocator: ^7.0.1
   provider: ^5.0.0
-  google_maps_flutter: ^2.0.1
-
+  google_maps_flutter: ^2.0.1 
+  location: ^4.1.1  
+  geoflutterfire: ^2.0.2 
+  rxdart: ^0.25.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

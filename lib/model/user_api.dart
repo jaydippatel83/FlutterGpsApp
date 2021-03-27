@@ -6,14 +6,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart' as path;
 
 getUserData(UserNotifier userNotifier) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
+  QuerySnapshot snapshot = await  Firestore.instance
       .collection('UserData')
       .orderBy("createdAt", descending: true)
-      .get();
+      .getDocuments();
 
   List<UserData> _userList = [];
-  snapshot.docs.forEach((document) {
-    UserData userData = UserData.fromMap(document.data());
+  snapshot.documents.forEach((document) {
+    UserData userData = UserData.fromMap(document.data);
     _userList.add(userData);
   });
   userNotifier.userList = _userList;
@@ -21,14 +21,14 @@ getUserData(UserNotifier userNotifier) async {
 
 uploadUserData(UserData userData, Function userUploaded,Position position) async {
   CollectionReference userRef =
-      FirebaseFirestore.instance.collection('UserData');
+      Firestore.instance.collection('UserData');
   userData.createdAt = Timestamp.now();
   userData.latitude=position.latitude.toDouble();
   userData.longitude=position.longitude.toDouble();
   
   DocumentReference documentRef = await userRef.add(userData.toMap());
-  userData.id = documentRef.id;
+  userData.id = documentRef.documentID;
   print('uploaded food successfully: ${userData.toString()}');
-  await documentRef.set(userData.toMap(), SetOptions(merge: true));
+  await documentRef.setData(userData.toMap(), merge: true);
   userUploaded(userData);
 }

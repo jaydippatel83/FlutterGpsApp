@@ -93,8 +93,8 @@ class _UserInfoState extends State<UserInfo> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           FocusScope.of(context).requestFocus(new FocusNode());
-          _saveFood(context);
-          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>Map()));
+          // _saveFood(context);
+          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>Map(widget.initialPosition,_currentUser.name)));
         },
         child: Icon(Icons.save),
         backgroundColor: Colors.green,
