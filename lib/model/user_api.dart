@@ -7,7 +7,7 @@ import 'package:path/path.dart' as path;
 
 getUserData(UserNotifier userNotifier) async {
   QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('UserData')
+      .collection('Location')
       .orderBy("createdAt", descending: true)
       .get();
 
@@ -19,16 +19,26 @@ getUserData(UserNotifier userNotifier) async {
   userNotifier.userList = _userList;
 }
 
-uploadUserData(UserData userData, Function userUploaded,Position position) async {
+uploadUserData(UserData userData, String name, bool isUpdate,
+    Function userUploaded, Position position) async {
   CollectionReference userRef =
-      FirebaseFirestore.instance.collection('UserData');
-  userData.createdAt = Timestamp.now();
-  userData.latitude=position.latitude.toDouble();
-  userData.longitude=position.longitude.toDouble();
-  
-  DocumentReference documentRef = await userRef.add(userData.toMap());
-  userData.id = documentRef.id;
-  print('uploaded food successfully: ${userData.toString()}');
-  await documentRef.set(userData.toMap(), SetOptions(merge: true));
-  userUploaded(userData);
+      FirebaseFirestore.instance.collection('Location');
+  userData.latitude = position.latitude;
+  userData.longitude = position.longitude;
+   userData.name = name;
+
+  if (isUpdate) {
+    userData.updatedAt = Timestamp.now();
+    await userRef.doc(userData.id).update(userData.toMap()).catchError((e) {
+      print(e);
+    });
+    userUploaded(userData);
+  } else {
+    userData.createdAt = Timestamp.now(); 
+    DocumentReference documentRef = await userRef.add(userData.toMap());
+    userData.id = documentRef.id;
+    print('uploaded food successfully: ${userData.toString()}');
+    await documentRef.set(userData.toMap(), SetOptions(merge: true));
+    userUploaded(userData);
+  }
 }

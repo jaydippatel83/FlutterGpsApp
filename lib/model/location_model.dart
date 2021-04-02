@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserData {
+class LocationModel {
   String id;
   String name;
   double latitude;
   double longitude;
   Timestamp createdAt;
   Timestamp updatedAt;
-  UserData();
+  LocationModel();
 
-  UserData.fromMap(Map<String, dynamic> data) {
+  LocationModel.fromMap(Map<String, dynamic> data) {
     id = data['id'];
     name = data['name'];
     latitude = data['latitude'];

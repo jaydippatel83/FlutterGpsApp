@@ -4,6 +4,7 @@ import 'package:flutter_gps_app/model/user_model.dart';
 import 'package:flutter_gps_app/notifire/user_notifire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import 'map.dart';
 
 class UserInfo extends StatefulWidget {
@@ -18,14 +19,15 @@ class _UserInfoState extends State<UserInfo> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   UserData _currentUser;
   TextEditingController subingredientsController = new TextEditingController();
-
+  String name;
+    var uuid = Uuid();
   @override
   void initState() {
     super.initState();
     UserNotifier userNotifier =
         Provider.of<UserNotifier>(context, listen: false);
 
-    if (userNotifier.currentUser != null) {  
+    if (userNotifier.currentUser != null) {
       _currentUser = userNotifier.currentUser;
     } else {
       _currentUser = UserData();
@@ -45,8 +47,8 @@ class _UserInfoState extends State<UserInfo> {
 
         return null;
       },
-      onSaved: (String value) {
-        _currentUser.name = value;
+      onChanged: (String value) {
+        name = value;
       },
     );
   }
@@ -55,7 +57,7 @@ class _UserInfoState extends State<UserInfo> {
     UserNotifier userNotifier =
         Provider.of<UserNotifier>(context, listen: false);
     userNotifier.addUser(userData);
-    Navigator.pop(context);
+    // Navigator.pop(context);
   }
 
   _saveFood(context) {
@@ -64,8 +66,7 @@ class _UserInfoState extends State<UserInfo> {
       return;
     }
     form.save();
-    uploadUserData(_currentUser, userUploaded,widget.initialPosition);
-    
+    // uploadUserData(_currentUser, userUploaded, widget.initialPosition);
   }
 
   @override
@@ -93,8 +94,10 @@ class _UserInfoState extends State<UserInfo> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           FocusScope.of(context).requestFocus(new FocusNode());
-          _saveFood(context);
-          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>Map()));
+          // _saveFood(context);
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => Map(
+                  widget.initialPosition, name != null ? name : "No User",uuid.v1())));
         },
         child: Icon(Icons.save),
         backgroundColor: Colors.green,
