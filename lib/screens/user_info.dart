@@ -74,7 +74,7 @@ class _UserInfoState extends State<UserInfo> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Food Form"),
+        title: Text("User Info"),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(32),

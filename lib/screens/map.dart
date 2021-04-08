@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
+
 class Map extends StatefulWidget {
   final Position initialPosition;
   final String name;
@@ -29,31 +30,30 @@ class _MapState extends State<Map> {
   var data;
   UserData _currentUser;
 
-  Set<Marker> markers = Set();
+  Iterable markers = [];
   var docId;
-
 
   @override
   void initState() {
     geoService.getCurrentLocation().listen((position) {
       centerScreen(position);
-    }); 
+    });
     UserNotifier userNotifier =
         Provider.of<UserNotifier>(context, listen: false);
-         
-    
+
     if (userNotifier.currentUser != null) {
       _currentUser.name = widget.name;
       _currentUser = userNotifier.currentUser;
     } else {
-       _currentUser = UserData();
+      _currentUser = UserData();
     }
 
     userUploaded(UserData userData) {
       userNotifier.addUser(userData);
     }
 
-    uploadUserData(_currentUser,widget.name,false, userUploaded, widget.initialPosition);
+    uploadUserData(
+        _currentUser, widget.name, false, userUploaded, widget.initialPosition);
 
     // firestore.collection("Location").add({
     //   "id": widget.id,
@@ -71,8 +71,8 @@ class _MapState extends State<Map> {
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         setState(() {
-           currentLatitude=documentSnapshot.data()['latitude'];
-           currentLongitude=documentSnapshot.data()['longitude'];
+          currentLatitude = documentSnapshot.data()['latitude'];
+          currentLongitude = documentSnapshot.data()['longitude'];
         });
       } else {
         print('Document does not exist on the database');
@@ -81,8 +81,6 @@ class _MapState extends State<Map> {
     super.initState();
   }
 
- 
- 
   @override
   Widget build(BuildContext context) {
     UserNotifier userNotifier = Provider.of<UserNotifier>(context);
@@ -91,19 +89,28 @@ class _MapState extends State<Map> {
       getUserData(userNotifier);
     }
 
-    userNotifier.userList.map((element) {
-      if (element.name == widget.name) {
-        setState(() {
-          docId = element.id;
-        });
-      }
+    Iterable _markers = Iterable.generate(
+        userNotifier.userList.length != null
+            ? userNotifier.userList.length
+            : null, (index) {
+      return Marker(
+          markerId: MarkerId(userNotifier.userList[index].id),
+          position: LatLng(
+            userNotifier.userList[index].latitude,
+            userNotifier.userList[index].longitude,
+          ),
+          infoWindow: InfoWindow(
+              title: userNotifier.userList[index].name, snippet: "CodeCrunch"));
     });
 
+    setState(() {
+      markers = _markers;
+    });
 
 //   Marker resultMarker = Marker(
 //   markerId: MarkerId(docId),
 //   infoWindow: InfoWindow(
-//   title: "${widget.name}", 
+//   title: "${widget.name}",
 //   ),
 //   position: LatLng(currentLatitude,
 //   currentLongitude),
@@ -117,33 +124,23 @@ class _MapState extends State<Map> {
       ),
       body: Stack(
         children: [
-          GoogleMap(
+         widget.initialPosition != null ? GoogleMap(
             initialCameraPosition: CameraPosition(
-                target: LatLng(currentLatitude, currentLongitude), zoom: 18.0),
-            mapType: MapType.normal, 
+                target: LatLng(widget.initialPosition.latitude,
+                    widget.initialPosition.longitude),
+                zoom: 18.0),
+            mapType: MapType.normal,
             myLocationEnabled: true,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
             },
-            // markers: markers,
-          ),
-          Positioned(
-          bottom: 20,
-          left: 10,
-          child: 
-          FlatButton(
-            child: Icon(Icons.pin_drop, color: Colors.white),
-            color: Colors.green,
-            onPressed:  (){}
-          ),
-      ),
+            markers: Set.from(markers),
+          ): Container(),
         ],
       ),
     );
   }
 
-
- 
   Future<void> centerScreen(Position position) async {
     final GoogleMapController controller = await _controller.future;
     UserNotifier userNotifier =
@@ -153,16 +150,7 @@ class _MapState extends State<Map> {
       userNotifier.addUser(userData);
     }
 
-    uploadUserData(_currentUser,widget.name,true, userUploaded,position);
-    // CollectionReference mapRef =
-    //     FirebaseFirestore.instance.collection('Location');
-    // await mapRef.doc(widget.id).update({
-    //   "latitude": position.latitude,
-    //   "longitude": position.longitude,
-    //   "updateAt": Timestamp.now(),
-    // }).catchError((e) {
-    //   print(e);
-    // });
+    uploadUserData(_currentUser, widget.name, true, userUploaded, position);
 
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(position.latitude, position.longitude), zoom: 18.0)));
