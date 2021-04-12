@@ -23,8 +23,8 @@ uploadUserData(UserData userData, String name, bool isUpdate,
     Function userUploaded, Position position) async {
   CollectionReference userRef =
       FirebaseFirestore.instance.collection('Location');
-  userData.latitude = position.latitude;
-  userData.longitude = position.longitude;
+   userData.latitude = position.latitude;
+   userData.longitude = position.longitude;
    userData.name = name;
 
   if (isUpdate) {
@@ -34,7 +34,7 @@ uploadUserData(UserData userData, String name, bool isUpdate,
     });
     userUploaded(userData);
   } else {
-    userData.createdAt = Timestamp.now(); 
+    userData.createdAt = Timestamp.now();  
     DocumentReference documentRef = await userRef.add(userData.toMap());
     userData.id = documentRef.id;
     print('uploaded food successfully: ${userData.toString()}');

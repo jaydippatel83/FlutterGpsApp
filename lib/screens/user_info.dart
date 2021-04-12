@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_gps_app/model/user_api.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_gps_app/model/user_model.dart';
 import 'package:flutter_gps_app/notifire/user_notifire.dart';
+import 'package:flutter_gps_app/screens/user_profile.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
-import 'map.dart';
+import 'package:uuid/uuid.dart'; 
 
 class UserInfo extends StatefulWidget {
   final Position initialPosition;
@@ -20,7 +19,8 @@ class _UserInfoState extends State<UserInfo> {
   UserData _currentUser;
   TextEditingController subingredientsController = new TextEditingController();
   String name;
-    var uuid = Uuid();
+  var uuid = Uuid();  
+
   @override
   void initState() {
     super.initState();
@@ -47,8 +47,9 @@ class _UserInfoState extends State<UserInfo> {
 
         return null;
       },
-      onChanged: (String value) {
-        name = value;
+      onChanged: (String value) {  
+
+          name = value; 
       },
     );
   }
@@ -71,6 +72,7 @@ class _UserInfoState extends State<UserInfo> {
 
   @override
   Widget build(BuildContext context) {
+     
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -93,11 +95,13 @@ class _UserInfoState extends State<UserInfo> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
+          FocusScope.of(context).requestFocus(new FocusNode()); 
           // _saveFood(context);
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => Map(
-                  widget.initialPosition, name != null ? name : "No User",uuid.v1())));
+          // Navigator.of(context).push(MaterialPageRoute(
+          //     builder: (_) => Map(
+          //         widget.initialPosition, name != null ? name : "No User",uuid.v1())));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => UserProfile(widget.initialPosition,name.length != 0 ? name : 'name')));
         },
         child: Icon(Icons.save),
         backgroundColor: Colors.green,
